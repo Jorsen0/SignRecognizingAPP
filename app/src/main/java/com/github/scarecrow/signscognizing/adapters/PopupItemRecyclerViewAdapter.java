@@ -3,6 +3,7 @@ package com.github.scarecrow.signscognizing.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +17,29 @@ import java.util.List;
 
 public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupItemRecyclerViewAdapter.StringListItemViewHolder>{
 
-    List<String> items;
+    private static final String TAG = "PopupItemRecyclerViewAd";
+    private List<String> items;
+    private OnItemClickListener mListener = null;
 
     public PopupItemRecyclerViewAdapter(){
         items = new ArrayList<>();
+
     }
 
+
     public void setItemList(List<String> itemList){
-        items = itemList;
+
+        this.items.clear();
+        this.items.addAll(itemList);
+        notifyDataSetChanged();
+    }
+
+    public void clearItems() {
+        items.clear();
+    }
+
+    public void setItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     @NonNull
@@ -36,12 +52,14 @@ public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupIte
 
     @Override
     public void onBindViewHolder(@NonNull StringListItemViewHolder holder, int position) {
-        String nowContent = items.get(position);
+        final String nowContent = items.get(position);
+        Log.d(TAG, "onBindViewHolder: content is " + nowContent);
         holder.content.setText(nowContent);
         holder.content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (mListener != null)
+                    mListener.onItemticClick(view, nowContent);
             }
         });
     }
@@ -60,5 +78,10 @@ public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupIte
             item_body = (LinearLayout) item_view;
             content = item_view.findViewById(R.id.popup_item_content);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemticClick(View view, String content);
+        //void onItemLongClick(View view);
     }
 }

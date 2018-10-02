@@ -17,6 +17,8 @@
     <string name="输入语音">长按录入语音</string>
     <string name="发送">发送</string>
     <string name="双手模式">双手模式</string>
+    <string name="语音消息">语音消息</string>
+    <string name="文字消息">文字消息</string>
     <string name="text_edit_hint">请在这里输入想要发送的信息</string>
     <string name="hint_sign_confirm">以上手语是否正确?</string>
     <string name="hint_sign_recapture">是否重新采集手语</string>

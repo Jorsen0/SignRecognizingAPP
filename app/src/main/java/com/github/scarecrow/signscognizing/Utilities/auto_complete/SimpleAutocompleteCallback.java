@@ -9,9 +9,13 @@ import com.otaliastudios.autocomplete.AutocompleteCallback;
  * Created by boyzhang on 2018/10/1.
  */
 
-public class SimpleAutocompleteCallback implements AutocompleteCallback <String>{
+public class SimpleAutocompleteCallback implements AutocompleteCallback<String> {
 
     private static final String TAG = "AutocompleteCallback";
+
+    public SimpleAutocompleteCallback() {
+
+    }
 
     /**
      * Called when an item inside your list is clicked.
@@ -25,14 +29,13 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback <String>
     public boolean onPopupItemClicked(Editable editable, String item) {
         String content = editable.toString();
         int index = content.lastIndexOf("。");
-        int length = content.length();
 
-        String before = content.substring(index + 1, length);
-        editable.replace(index + 1, length, item);
-        //选中后popup不显示
-        SimplePolicy.popup_show_status = false;
+        String before = content.substring(0, index + 1);
+        content = before + item;
+        editable.clear();
+        editable.append(content);
 
-        Log.i(TAG, "onPopupItemClicked: change " + before + " to " + item);
+        Log.e(TAG, "onPopupItemClicked: change " + before + " to " + item);
         return true;
     }
 

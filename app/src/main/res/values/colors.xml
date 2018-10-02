@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="semi_alpha">#3effffff</color>
     <color name="dark_alpha">#0e000000</color>
+    <color name="black">#000000</color>
     <color name="block_white">#aeffffff</color>
     <color name="lucency">#00000000</color>
 </resources>

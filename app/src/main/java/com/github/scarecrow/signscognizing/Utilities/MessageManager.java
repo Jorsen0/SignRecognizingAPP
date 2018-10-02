@@ -131,6 +131,9 @@ public class MessageManager {
      */
     private void processSignMessageFeedback(String text, int sign_id, int capture_id) {
         SignMessage new_msg;
+//        if(text.equals(""))
+//            return;
+
         if (sign_message_map.containsKey(sign_id)) {
             new_msg = sign_message_map.get(sign_id);
             synthesizeVoice(text);

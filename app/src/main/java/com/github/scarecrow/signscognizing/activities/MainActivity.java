@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.github.scarecrow.signscognizing.R;
 import com.github.scarecrow.signscognizing.Utilities.MessageManager;
+import com.github.scarecrow.signscognizing.Utilities.auto_complete.SentenceAutoCompleter;
 import com.github.scarecrow.signscognizing.fragments.ArmbandSelectFragment;
 import com.github.scarecrow.signscognizing.fragments.ConversationDisplayFragment;
 import com.github.scarecrow.signscognizing.fragments.InfoDisplayFragment;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Log.d("", "onCreate: " + speechRecognizer);
-
+        SentenceAutoCompleter.getInstance();
         MessageManager.getInstance().initTTS(getApplicationContext());
 
     }

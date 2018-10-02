@@ -3,35 +3,33 @@ package com.github.scarecrow.signscognizing.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-
-import com.github.scarecrow.signscognizing.Utilities.ArmbandManager;
-import com.github.scarecrow.signscognizing.Utilities.SocketConnectionManager;
-import com.github.scarecrow.signscognizing.fragments.InputControlPanelFragment;
-import com.iflytek.cloud.SpeechRecognizer;
-
-import android.os.AsyncTask;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.scarecrow.signscognizing.R;
+import com.github.scarecrow.signscognizing.Utilities.ArmbandManager;
 import com.github.scarecrow.signscognizing.Utilities.ConversationMessage;
 import com.github.scarecrow.signscognizing.Utilities.MessageManager;
 import com.github.scarecrow.signscognizing.Utilities.SignMessage;
 import com.github.scarecrow.signscognizing.Utilities.TextMessage;
 import com.github.scarecrow.signscognizing.Utilities.VoiceMessage;
+import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimplePolicy;
+import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
+import com.otaliastudios.autocomplete.Autocomplete;
+import com.otaliastudios.autocomplete.AutocompleteCallback;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.InputStreamReader;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -65,36 +63,143 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         messages_list = MessageManager.getInstance().getMessagesList();
     }
 
-    static class MessagesItemViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout receive_msg_view, send_msg_view,
-                sign_confirm_dialog, sign_recapture_dialog;
+    private void setHolderViewByMsgState(final MessagesItemViewHolder holder,
+                                         final SignMessage message) {
+        initializeHolderView(holder);
+        switch (message.getSignFeedbackStatus()) {
+            case SignMessage.INITIAL:
+                if (holder.receive_msg_view.getVisibility() != View.VISIBLE)
+                    holder.receive_msg_view.setVisibility(View.VISIBLE);
+                if (holder.send_msg_view.getVisibility() != View.GONE)
+                    holder.send_msg_view.setVisibility(View.GONE);
+                if (!holder.receive_msg_content.getText().toString().equals(message.getTextContent()))
+                    holder.receive_msg_content.setText(message.getTextContent());
 
-        public TextView receive_msg_content, send_msg_content,
-                sign_confirm_yes_button, sign_confirm_no_button,
-                sign_recapture_yes_button, sign_recapture_no_button,
-                msg_type_display;
+                if (message.isCaptureComplete()) {
+                    if (holder.sign_confirm_dialog.getVisibility() != View.VISIBLE)
+                        holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
+
+                    holder.sign_confirm_yes_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            holder.sign_confirm_yes_button.setTextColor(Color.GRAY);
+                            message.setSignFeedbackStatus(SignMessage.CONFIRMED_CORRECT);
+                            recognizeResultFeedback(message, true);
+                            setHolderViewByMsgState(holder, message);
+                        }
+                    });
+
+                    holder.sign_confirm_no_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            message.setSignFeedbackStatus(SignMessage.CONFIRMED_WRONG);
+                            recognizeResultFeedback(message, false);
+                            setHolderViewByMsgState(holder, message);
+                        }
+                    });
+                } else {
+                    if (holder.sign_confirm_dialog.getVisibility() != View.GONE)
+                        holder.sign_confirm_dialog.setVisibility(View.GONE);
+
+                    AutocompleteCallback autocompleteCallback = new AutocompleteCallback() {
+                        @Override
+                        public boolean onPopupItemClicked(Editable editable, Object item) {
+                            Log.d(TAG, "onPopupItemClicked: " + item);
+                            message.setCompleteResult((String) item);
+                            notifyDataSetChanged();
+                            return false;
+                        }
+
+                        @Override
+                        public void onPopupVisibilityChanged(boolean shown) {
+
+                        }
+                    };
 
 
-        public MessagesItemViewHolder(View view) {
-            super(view);
-            receive_msg_view = view.findViewById(R.id.message_receive_view);
-            send_msg_view = view.findViewById(R.id.message_send_view);
-            sign_confirm_dialog = view.findViewById(R.id.sign_confirm_dialog);
-            sign_recapture_dialog = view.findViewById(R.id.sign_recapture_dialog);
+                    Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+                    float elevation = 6f;
+                    Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
+                    Autocomplete.on(holder.receive_msg_content)
+                            .with(new SimplePolicy())
+                            .with(autocompleteCallback)
+                            .with(elevation)
+                            .with(backgroundDrawable)
+                            .with(new SimpleRecyclerViewPresenter(context, message.getCompleteResult()))
+                            .build();
 
-            receive_msg_content = view.findViewById(R.id.msg_content_receive);
-            send_msg_content = view.findViewById(R.id.msg_content_send);
+                }
+                break;
+            case SignMessage.CONFIRMED_CORRECT:
+                if (holder.receive_msg_view.getVisibility() != View.VISIBLE)
+                    holder.receive_msg_view.setVisibility(View.VISIBLE);
+                if (holder.send_msg_view.getVisibility() != View.GONE)
+                    holder.send_msg_view.setVisibility(View.GONE);
+                if (holder.sign_confirm_dialog.getVisibility() != View.VISIBLE)
+                    holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
+                if (holder.sign_recapture_dialog.getVisibility() != View.GONE)
+                    holder.sign_recapture_dialog.setVisibility(View.GONE);
+                if (!holder.receive_msg_content.getText().toString().equals(message.getTextContent()))
+                    holder.receive_msg_content.setText(message.getTextContent());
+                if (holder.sign_confirm_yes_button.getTextColors().getDefaultColor() != Color.GRAY)
+                    holder.sign_confirm_yes_button.setTextColor(Color.GRAY);
+                break;
+            case SignMessage.CONFIRMED_WRONG:
+                if (holder.receive_msg_view.getVisibility() != View.VISIBLE)
+                    holder.receive_msg_view.setVisibility(View.VISIBLE);
+                if (holder.send_msg_view.getVisibility() != View.GONE)
+                    holder.send_msg_view.setVisibility(View.GONE);
+                if (holder.sign_confirm_dialog.getVisibility() != View.VISIBLE)
+                    holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
+                if (!holder.receive_msg_content.getText().toString().equals(message.getTextContent()))
+                    holder.receive_msg_content.setText(message.getTextContent());
+                if (holder.sign_confirm_no_button.getTextColors().getDefaultColor() != Color.GRAY)
+                    holder.sign_confirm_no_button.setTextColor(Color.GRAY);
+                if (holder.sign_recapture_dialog.getVisibility() != View.VISIBLE)
+                    holder.sign_recapture_dialog.setVisibility(View.VISIBLE);
 
-            sign_confirm_yes_button = view.findViewById(R.id.button_sign_confirm_yes);
-            sign_confirm_no_button = view.findViewById(R.id.button_sign_confirm_no);
+                holder.sign_recapture_yes_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "onClick: 手语re采集 回调");
+                        if (!recaptureRequest(message)) {
+                            Toast.makeText(context, " 已经有一条消息在进行手语采集了，请勿重复", Toast.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        }
+                        holder.sign_recapture_yes_button.setTextColor(Color.GRAY);
+                        message.setSignFeedbackStatus(SignMessage.INITIAL);
+                        setHolderViewByMsgState(holder, message);
 
-            sign_recapture_yes_button = view.findViewById(R.id.button_sign_recapture_yes);
-            sign_recapture_no_button = view.findViewById(R.id.button_sign_recapture_no);
+                    }
+                });
+                holder.sign_recapture_no_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        holder.sign_recapture_no_button.setTextColor(Color.GRAY);
+                        message.setSignFeedbackStatus(SignMessage.NO_RECAPTURE);
+                        setHolderViewByMsgState(holder, message);
+                    }
+                });
+                break;
+            case SignMessage.NO_RECAPTURE:
+                if (holder.receive_msg_view.getVisibility() != View.VISIBLE)
+                    holder.receive_msg_view.setVisibility(View.VISIBLE);
+                if (holder.send_msg_view.getVisibility() != View.GONE)
+                    holder.send_msg_view.setVisibility(View.GONE);
+                if (holder.sign_confirm_dialog.getVisibility() != View.VISIBLE)
+                    holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
+                if (!holder.receive_msg_content.getText().toString().equals(message.getTextContent()))
+                    holder.receive_msg_content.setText(message.getTextContent());
 
-            msg_type_display = view.findViewById(R.id.text_view_msg_type_display);
-
+                if (holder.sign_confirm_no_button.getTextColors().getDefaultColor() != Color.GRAY)
+                    holder.sign_confirm_no_button.setTextColor(Color.GRAY);
+                if (holder.sign_recapture_dialog.getVisibility() != View.VISIBLE)
+                    holder.sign_recapture_dialog.setVisibility(View.VISIBLE);
+                if (holder.sign_confirm_no_button.getTextColors().getDefaultColor() != Color.GRAY)
+                    holder.sign_confirm_no_button.setTextColor(Color.GRAY);
+                break;
         }
-
     }
 
     @Override
@@ -160,82 +265,37 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
 
     }
 
-    private void setHolderViewByMsgState(final MessagesItemViewHolder holder,
-                                         final SignMessage message) {
-        initializeHolderView(holder);
-        switch (message.getSignFeedbackStatus()) {
-            case SignMessage.INITIAL:
-                holder.receive_msg_view.setVisibility(View.VISIBLE);
-                holder.receive_msg_content.setText(message.getTextContent());
-                if (message.isCaptureComplete()) {
-                    holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
-                    holder.sign_confirm_yes_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            holder.sign_confirm_yes_button.setTextColor(Color.GRAY);
-                            message.setSignFeedbackStatus(SignMessage.CONFIRMED_CORRECT);
-                            recognizeResultFeedback(message, true);
-                            setHolderViewByMsgState(holder, message);
-                        }
-                    });
+    static class MessagesItemViewHolder extends RecyclerView.ViewHolder {
+        public LinearLayout receive_msg_view, send_msg_view,
+                sign_confirm_dialog, sign_recapture_dialog;
 
-                    holder.sign_confirm_no_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            message.setSignFeedbackStatus(SignMessage.CONFIRMED_WRONG);
-                            recognizeResultFeedback(message, false);
-                            setHolderViewByMsgState(holder, message);
-                        }
-                    });
-                }
-                break;
-            case SignMessage.CONFIRMED_CORRECT:
-                holder.receive_msg_view.setVisibility(View.VISIBLE);
-                holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
-                holder.receive_msg_content.setText(message.getTextContent());
-                holder.sign_confirm_yes_button.setTextColor(Color.GRAY);
-                break;
-            case SignMessage.CONFIRMED_WRONG:
-                holder.receive_msg_view.setVisibility(View.VISIBLE);
-                holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
-                holder.receive_msg_content.setText(message.getTextContent());
-                holder.sign_confirm_no_button.setTextColor(Color.GRAY);
+        public TextView send_msg_content, sign_confirm_yes_button,
+                sign_confirm_no_button, sign_recapture_yes_button,
+                sign_recapture_no_button, msg_type_display;
 
-                holder.sign_recapture_dialog.setVisibility(View.VISIBLE);
-                holder.sign_recapture_yes_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "onClick: 手语re采集 回调");
-                        if (!recaptureRequest(message)) {
-                            Toast.makeText(context, " 已经有一条消息在进行手语采集了，请勿重复", Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
-                        }
-                        holder.sign_recapture_yes_button.setTextColor(Color.GRAY);
-                        message.setSignFeedbackStatus(SignMessage.INITIAL);
-                        setHolderViewByMsgState(holder, message);
+        public EditText receive_msg_content;
 
-                    }
-                });
-                holder.sign_recapture_no_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        holder.sign_recapture_no_button.setTextColor(Color.GRAY);
-                        message.setSignFeedbackStatus(SignMessage.NO_RECAPTURE);
-                        setHolderViewByMsgState(holder, message);
-                    }
-                });
-                break;
-            case SignMessage.NO_RECAPTURE:
-                holder.receive_msg_view.setVisibility(View.VISIBLE);
-                holder.sign_confirm_dialog.setVisibility(View.VISIBLE);
-                holder.receive_msg_content.setText(message.getTextContent());
-                holder.sign_confirm_no_button.setTextColor(Color.GRAY);
 
-                holder.sign_recapture_dialog.setVisibility(View.VISIBLE);
-                holder.sign_recapture_no_button.setTextColor(Color.GRAY);
-                break;
+        public MessagesItemViewHolder(View view) {
+            super(view);
+            receive_msg_view = view.findViewById(R.id.message_receive_view);
+            send_msg_view = view.findViewById(R.id.message_send_view);
+            sign_confirm_dialog = view.findViewById(R.id.sign_confirm_dialog);
+            sign_recapture_dialog = view.findViewById(R.id.sign_recapture_dialog);
+
+            receive_msg_content = view.findViewById(R.id.msg_content_receive);
+            send_msg_content = view.findViewById(R.id.msg_content_send);
+
+            sign_confirm_yes_button = view.findViewById(R.id.button_sign_confirm_yes);
+            sign_confirm_no_button = view.findViewById(R.id.button_sign_confirm_no);
+
+            sign_recapture_yes_button = view.findViewById(R.id.button_sign_recapture_yes);
+            sign_recapture_no_button = view.findViewById(R.id.button_sign_recapture_no);
+
+            msg_type_display = view.findViewById(R.id.text_view_msg_type_display);
+
         }
+
     }
 
     private boolean recaptureRequest(SignMessage msg) {

@@ -8,10 +8,10 @@ import java.util.List;
 public class SignSentence {
 
     private List<String> word_seq;
+    private String sentence;
 
     public SignSentence(){
         word_seq = new LinkedList<>();
-
     }
 
     public void appendWord(String w){
@@ -23,12 +23,26 @@ public class SignSentence {
     }
 
 
+    public List<String> getWordSeq() {
+        return word_seq;
+    }
+
+    public void setSentence(String s) {
+        sentence = s;
+    }
+
     public String getSentenceStr(){
-        StringBuilder ret = new StringBuilder();
-        ret.append("");
-        for (String word: word_seq) {
-            ret.append(word).append(" ");
+        if (sentence == null) {
+            StringBuilder ret = new StringBuilder();
+            ret.append("");
+            for (String word : word_seq) {
+                ret.append(word).append(" ");
+            }
+            return ret.toString();
+        } else {
+            return sentence;
         }
-        return ret.toString();
+
+
     }
 }

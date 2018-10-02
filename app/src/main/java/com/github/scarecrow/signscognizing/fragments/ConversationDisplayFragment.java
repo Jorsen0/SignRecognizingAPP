@@ -83,6 +83,8 @@ public class ConversationDisplayFragment extends Fragment {
             }
         });
 
+//        MessageManager.getInstance().sampleDisplayCreate();
+
 
 
     }
