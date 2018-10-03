@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.github.scarecrow.signscognizing.Utilities.MessageManager;
 import com.github.scarecrow.signscognizing.Utilities.SignMessage;
 import com.github.scarecrow.signscognizing.Utilities.TextMessage;
 import com.github.scarecrow.signscognizing.Utilities.VoiceMessage;
+import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleAutocompleteCallback;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimplePolicy;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
 import com.otaliastudios.autocomplete.Autocomplete;
@@ -72,8 +72,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                     holder.receive_msg_view.setVisibility(View.VISIBLE);
                 if (holder.send_msg_view.getVisibility() != View.GONE)
                     holder.send_msg_view.setVisibility(View.GONE);
-                if (!holder.receive_msg_content.getText().toString().equals(message.getTextContent()))
-                    holder.receive_msg_content.setText(message.getTextContent());
+
 
                 if (message.isCaptureComplete()) {
                     if (holder.sign_confirm_dialog.getVisibility() != View.VISIBLE)
@@ -97,37 +96,15 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                             setHolderViewByMsgState(holder, message);
                         }
                     });
+                    holder.receive_msg_content.setText(message.getTextContent());
                 } else {
                     if (holder.sign_confirm_dialog.getVisibility() != View.GONE)
                         holder.sign_confirm_dialog.setVisibility(View.GONE);
-
-                    AutocompleteCallback autocompleteCallback = new AutocompleteCallback() {
-                        @Override
-                        public boolean onPopupItemClicked(Editable editable, Object item) {
-                            Log.d(TAG, "onPopupItemClicked: " + item);
-                            message.setCompleteResult((String) item);
-                            notifyDataSetChanged();
-                            return false;
-                        }
-
-                        @Override
-                        public void onPopupVisibilityChanged(boolean shown) {
-
-                        }
-                    };
-
-
-                    Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
-                    float elevation = 6f;
-                    Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
-                    Autocomplete.on(holder.receive_msg_content)
-                            .with(new SimplePolicy())
-                            .with(autocompleteCallback)
-                            .with(elevation)
-                            .with(backgroundDrawable)
-                            .with(new SimpleRecyclerViewPresenter(context, message.getCompleteResult()))
-                            .build();
-
+                    Log.d(TAG, "setHolderViewByMsgState: setting the data to callback and presenter");
+                    System.out.println("setHolderViewByMsgState: setting the data to callback and presenter");
+                    holder.popupCallback.setMessageObj(message);
+                    holder.popupPresenter.setComleteRes(message.getCompleteResult());
+                    holder.receive_msg_content.setText(message.getTextContent());
                 }
                 break;
             case SignMessage.CONFIRMED_CORRECT:
@@ -206,7 +183,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
     public MessagesItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.conversation_message_item, parent, false);
-        return new MessagesItemViewHolder(view);
+        return new MessagesItemViewHolder(view, context, this);
     }
 
     @Override
@@ -276,7 +253,10 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         public EditText receive_msg_content;
 
 
-        public MessagesItemViewHolder(View view) {
+        public SimpleAutocompleteCallback popupCallback;
+        public SimpleRecyclerViewPresenter popupPresenter;
+
+        public MessagesItemViewHolder(View view, Context context, ConversationMessagesRVAdapter adapter) {
             super(view);
             receive_msg_view = view.findViewById(R.id.message_receive_view);
             send_msg_view = view.findViewById(R.id.message_send_view);
@@ -293,6 +273,23 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
             sign_recapture_no_button = view.findViewById(R.id.button_sign_recapture_no);
 
             msg_type_display = view.findViewById(R.id.text_view_msg_type_display);
+
+
+            Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+            float elevation = 6f;
+            Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
+            System.out.println("setHolderViewByMsgState: build the autocomplete");
+            popupCallback = new SimpleAutocompleteCallback(adapter);
+            popupPresenter = new SimpleRecyclerViewPresenter(context);
+
+            Autocomplete.on(receive_msg_content)
+                    .with(new SimplePolicy())
+                    .with((AutocompleteCallback) popupCallback)
+                    .with(elevation)
+                    .with(backgroundDrawable)
+                    .with(popupPresenter)
+                    .build();
+
 
         }
 

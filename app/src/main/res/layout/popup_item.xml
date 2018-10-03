@@ -1,4 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Last modified 18-10-2 下午10:26.
+  ~ Author: Scarecrow
+  ~ Mail: bugboy56@gmail.com
+  ~
+  -->
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"

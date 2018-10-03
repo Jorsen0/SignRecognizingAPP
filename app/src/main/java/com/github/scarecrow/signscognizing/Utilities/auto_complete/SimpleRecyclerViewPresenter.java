@@ -9,6 +9,7 @@ import android.view.View;
 import com.github.scarecrow.signscognizing.adapters.PopupItemRecyclerViewAdapter;
 import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -20,10 +21,8 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
 
     private List<String> complete_res;
 
-    public SimpleRecyclerViewPresenter(Context context, List<String> res) {
+    public SimpleRecyclerViewPresenter(Context context) {
         super(context);
-        complete_res = res;
-
     }
 
     @Override
@@ -35,8 +34,13 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
                 dispatchClick(content);
             }
         });
-        Log.d(TAG, "instantiateAdapter: get instance");
+        Log.d(TAG, "instantiateAdapter: get instance " + instance.getItems());
+        System.out.println("instantiateAdapter: get instance " + instance.getItems());
         return instance;
+    }
+
+    public void setComleteRes(List<String> res) {
+        complete_res = res;
     }
 
     @Override
@@ -46,6 +50,11 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
             Log.d(TAG, "onQuery: " + queryContent);
         }
 
-        instance.setItemList(complete_res);
+        System.out.println("onQuery: executed");
+        if (complete_res != null) {
+//            instance.setItemList(complete_res);
+            List<String> test = Arrays.asList("demo", "demo2", "demo3");
+            instance.setItemList(test);
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.github.scarecrow.signscognizing.Utilities.auto_complete;
 import android.text.Editable;
 import android.util.Log;
 
+import com.github.scarecrow.signscognizing.Utilities.SignMessage;
+import com.github.scarecrow.signscognizing.adapters.ConversationMessagesRVAdapter;
 import com.otaliastudios.autocomplete.AutocompleteCallback;
 
 /**
@@ -13,8 +15,18 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback<String> 
 
     private static final String TAG = "AutocompleteCallback";
 
-    public SimpleAutocompleteCallback() {
+    // for calling method when notice the adapter notify data set changed
+    private ConversationMessagesRVAdapter adapter;
 
+    private SignMessage message;
+
+    public SimpleAutocompleteCallback(ConversationMessagesRVAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    //when you can get the message set it in.
+    public void setMessageObj(SignMessage m) {
+        message = m;
     }
 
     /**
@@ -28,14 +40,16 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback<String> 
      */
     public boolean onPopupItemClicked(Editable editable, String item) {
         String content = editable.toString();
-        int index = content.lastIndexOf("。");
 
-        String before = content.substring(0, index + 1);
-        content = before + item;
-        editable.clear();
-        editable.append(content);
+        if (message != null) {
+            Log.d(TAG, "onPopupItemClicked: set the complete result in");
+            System.out.println("onPopupItemClicked: set the complete result in");
+            message.setCompleteResult(item);
+            adapter.notifyDataSetChanged();
+        }
 
-        Log.e(TAG, "onPopupItemClicked: change " + before + " to " + item);
+        Log.e(TAG, ": change " + content + " to " + item);
+        System.out.println("onPopupItemClicked: change " + content + " to " + item);
         return true;
     }
 

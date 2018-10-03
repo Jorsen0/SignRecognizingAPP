@@ -35,6 +35,7 @@
                 android:background="@drawable/bubble_box"
                 android:gravity="start"
                 android:inputType="none"
+                android:editable="false"
                 android:text="啊啊啊啊啊"
                 android:padding="16dp"
                 android:textColor="#000000"

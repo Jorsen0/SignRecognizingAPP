@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.github.scarecrow.signscognizing.R;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupItemRecyclerViewAdapter.StringListItemViewHolder>{
@@ -22,16 +22,20 @@ public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupIte
     private OnItemClickListener mListener = null;
 
     public PopupItemRecyclerViewAdapter(){
-        items = new ArrayList<>();
+        items = Arrays.asList("aaaa", "bbbbb", "vvvvv", "ddddd");
 
     }
 
 
     public void setItemList(List<String> itemList){
 
-        this.items.clear();
-        this.items.addAll(itemList);
+//        this.items.clear();
+//        this.items.addAll(itemList);
         notifyDataSetChanged();
+    }
+
+    public List<String> getItems() {
+        return items;
     }
 
     public void clearItems() {
@@ -54,6 +58,7 @@ public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupIte
     public void onBindViewHolder(@NonNull StringListItemViewHolder holder, int position) {
         final String nowContent = items.get(position);
         Log.d(TAG, "onBindViewHolder: content is " + nowContent);
+        System.out.println("onBindViewHolder: content is " + nowContent);
         holder.content.setText(nowContent);
         holder.content.setOnClickListener(new View.OnClickListener() {
             @Override
