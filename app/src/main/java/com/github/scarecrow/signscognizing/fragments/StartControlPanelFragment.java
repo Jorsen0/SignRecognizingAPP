@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.github.scarecrow.signscognizing.R;
 import com.github.scarecrow.signscognizing.activities.MainActivity;
@@ -43,7 +43,7 @@ public class StartControlPanelFragment extends Fragment {
         assert fragment_view != null;
         assert parent_activity != null;
 
-        ImageView bt = fragment_view.findViewById(R.id.button_start_conversation);
+        LinearLayout bt = fragment_view.findViewById(R.id.button_start_conversation);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

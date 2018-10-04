@@ -43,13 +43,12 @@ public class SimpleAutocompleteCallback implements AutocompleteCallback<String> 
 
         if (message != null) {
             Log.d(TAG, "onPopupItemClicked: set the complete result in");
-            System.out.println("onPopupItemClicked: set the complete result in");
             message.setCompleteResult(item);
             adapter.notifyDataSetChanged();
         }
 
         Log.e(TAG, ": change " + content + " to " + item);
-        System.out.println("onPopupItemClicked: change " + content + " to " + item);
+        Log.d(TAG, "onPopupItemClicked: change " + content + " to " + item);
         return true;
     }
 

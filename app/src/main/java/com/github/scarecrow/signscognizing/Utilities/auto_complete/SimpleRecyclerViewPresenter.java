@@ -35,7 +35,6 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
             }
         });
         Log.d(TAG, "instantiateAdapter: get instance " + instance.getItems());
-        System.out.println("instantiateAdapter: get instance " + instance.getItems());
         return instance;
     }
 
@@ -50,7 +49,7 @@ public class SimpleRecyclerViewPresenter extends RecyclerViewPresenter<String> {
             Log.d(TAG, "onQuery: " + queryContent);
         }
 
-        System.out.println("onQuery: executed");
+        Log.d(TAG, "onQuery: executed");
         if (complete_res != null) {
 //            instance.setItemList(complete_res);
             List<String> test = Arrays.asList("demo", "demo2", "demo3");

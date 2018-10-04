@@ -35,10 +35,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="6dp"
+            android:fontFamily="@font/noto_sans"
+            android:paddingBottom="-35dp"
+            android:paddingEnd="6dp"
+            android:paddingStart="6dp"
             android:id="@+id/conversation_text_input"
             android:textSize="25sp"
             android:background="#9fffffff"
+            android:paddingTop="-35dp"
             android:hint="@string/text_edit_hint" />
 
         <ImageView

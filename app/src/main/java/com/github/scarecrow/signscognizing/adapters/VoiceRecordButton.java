@@ -122,7 +122,9 @@ public class VoiceRecordButton extends AppCompatImageView {
                 } else {
                     if (recording_time <= 1) {
                         Log.d(TAG, "onTouchEvent: " + recording_time);
-                        Toast.makeText(getContext(), "语音时间太短", Toast.LENGTH_LONG)
+                        Toast.makeText(getContext(),
+                                getResources().getString(R.string.语音时间太短),
+                                Toast.LENGTH_LONG)
                                 .show();
                         recorder.stop();
                     } else {
@@ -151,11 +153,11 @@ public class VoiceRecordButton extends AppCompatImageView {
         }
         if (is_can_cancel) {
             dialog_img.setImageResource(R.mipmap.record_cancel);
-            dialog_text.setText("松开手指可取消录音");
+            dialog_text.setText(getResources().getString(R.string.松开手指可取消录音));
 //            this.setText("松开手指 取消录音");
         } else {
             dialog_img.setImageResource(R.mipmap.record_animate_01);
-            dialog_text.setText("向上滑动可取消录音");
+            dialog_text.setText(getResources().getString(R.string.向上滑动可取消录音));
 //            this.setText("松开手指 完成录音");
 
         }

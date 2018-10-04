@@ -3,8 +3,6 @@ package com.github.scarecrow.signscognizing.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
@@ -25,13 +23,13 @@ import com.github.scarecrow.signscognizing.Utilities.SignMessage;
 import com.github.scarecrow.signscognizing.Utilities.TextMessage;
 import com.github.scarecrow.signscognizing.Utilities.VoiceMessage;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleAutocompleteCallback;
-import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimplePolicy;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
-import com.otaliastudios.autocomplete.Autocomplete;
-import com.otaliastudios.autocomplete.AutocompleteCallback;
 
+import java.io.IOException;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -45,6 +43,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<ConversationMessagesRVAdapter.MessagesItemViewHolder> {
+
 
 
     private static final MediaType MEDIA_TYPE_JSON
@@ -100,10 +99,10 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 } else {
                     if (holder.sign_confirm_dialog.getVisibility() != View.GONE)
                         holder.sign_confirm_dialog.setVisibility(View.GONE);
-                    Log.d(TAG, "setHolderViewByMsgState: setting the data to callback and presenter");
-                    System.out.println("setHolderViewByMsgState: setting the data to callback and presenter");
-                    holder.popupCallback.setMessageObj(message);
-                    holder.popupPresenter.setComleteRes(message.getCompleteResult());
+//                    Log.d(TAG, "setHolderViewByMsgState: setting the data to callback and presenter");
+//                    holder.popupCallback.setMessageObj(message);
+//                    holder.popupPresenter.setComleteRes(message.getCompleteResult());
+//                    Log.d(TAG, "setHolderViewByMsgState: "+ ViewCompat.isAttachedToWindow(holder.receive_msg_content));
                     holder.receive_msg_content.setText(message.getTextContent());
                 }
                 break;
@@ -204,7 +203,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 holder.send_msg_view.setVisibility(View.VISIBLE);
                 holder.receive_msg_view.setVisibility(View.GONE);
                 holder.send_msg_content.setText(text_message.getTextContent());
-                holder.msg_type_display.setText("文字消息");
+                holder.msg_type_display.setText(context.getString(R.string.文字消息));
                 break;
 
             case ConversationMessage.VOICE:
@@ -212,7 +211,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 holder.send_msg_view.setVisibility(View.VISIBLE);
                 holder.receive_msg_view.setVisibility(View.GONE);
                 holder.send_msg_content.setText(voice_message.getTextContent());
-                holder.msg_type_display.setText("语音消息");
+                holder.msg_type_display.setText(context.getString(R.string.语音消息));
                 break;
             default:
                 break;
@@ -239,6 +238,51 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         holder.sign_recapture_yes_button.setOnClickListener(empty);
         holder.sign_confirm_no_button.setOnClickListener(empty);
         holder.sign_confirm_yes_button.setOnClickListener(empty);
+
+    }
+
+    private boolean recaptureRequest(SignMessage msg) {
+        return MessageManager.getInstance()
+                .requestCaptureSign(msg);
+    }
+
+    private void recognizeResultFeedback(final SignMessage msg, final boolean correctness) {
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+
+        String capture_id = String.valueOf(msg.getCaptureId()),
+                correctness_str = correctness ? "True" : "False";
+
+        String content = "?" + "capture_id=" + capture_id
+                + "&correctness=" + correctness_str;
+
+        RequestBody requestBody = RequestBody
+                .create(MEDIA_TYPE_JSON, content);
+        Request request = new Request.Builder()
+                .url(ArmbandManager.SERVER_IP_ADDRESS + "/capture_feedback/")
+                .post(requestBody)
+                .build();
+        Log.d(TAG, "recognizeResultFeedback: seed feedback: " + content);
+        try {
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    if (response.isSuccessful()) {
+                        main_thread_handler.obtainMessage()
+                                .sendToTarget();
+                    }
+                }
+            });
+
+        } catch (Exception ee) {
+            ee.printStackTrace();
+            Log.e(TAG, "send feedback error");
+        }
 
     }
 
@@ -275,63 +319,23 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
             msg_type_display = view.findViewById(R.id.text_view_msg_type_display);
 
 
-            Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
-            float elevation = 6f;
-            Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
-            System.out.println("setHolderViewByMsgState: build the autocomplete");
-            popupCallback = new SimpleAutocompleteCallback(adapter);
-            popupPresenter = new SimpleRecyclerViewPresenter(context);
-
-            Autocomplete.on(receive_msg_content)
-                    .with(new SimplePolicy())
-                    .with((AutocompleteCallback) popupCallback)
-                    .with(elevation)
-                    .with(backgroundDrawable)
-                    .with(popupPresenter)
-                    .build();
+//            Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+//            float elevation = 6f;
+//            Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
+//            popupCallback = new SimpleAutocompleteCallback(adapter);
+//            popupPresenter = new SimpleRecyclerViewPresenter(context);
+//            Log.d(TAG, "setHolderViewByMsgState: "+ ViewCompat.isAttachedToWindow(receive_msg_content));
+//            Autocomplete.on(receive_msg_content)
+//                    .with(new SimplePolicy())
+//                    .with((AutocompleteCallback) popupCallback)
+//                    .with(elevation)
+//                    .with(backgroundDrawable)
+//                    .with(popupPresenter)
+//                    .build();
 
 
         }
 
-    }
-
-    private boolean recaptureRequest(SignMessage msg) {
-        return MessageManager.getInstance()
-                .recaptureSignRequest(msg);
-    }
-
-    private void recognizeResultFeedback(final SignMessage msg, final boolean correctness) {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OkHttpClient okHttpClient = new OkHttpClient();
-
-                String capture_id = String.valueOf(msg.getCaptureId()),
-                        correctness_str = correctness ? "True" : "False";
-
-                String content = "?" + "capture_id=" + capture_id
-                        + "&correctness=" + correctness_str;
-
-                RequestBody requestBody = RequestBody
-                        .create(MEDIA_TYPE_JSON, content);
-                Request request = new Request.Builder()
-                        .url(ArmbandManager.SERVER_IP_ADDRESS + "/capture_feedback/")
-                        .post(requestBody)
-                        .build();
-                Log.d(TAG, "recognizeResultFeedback: seed feedback: " + content);
-                try {
-                    Response response = okHttpClient.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        main_thread_handler.obtainMessage()
-                                .sendToTarget();
-                    }
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                    Log.e(TAG, "send feedback error");
-                }
-            }
-        }).start();
     }
 
     @SuppressLint("HandlerLeak")

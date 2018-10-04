@@ -6,6 +6,11 @@
     <string name="关于">关于</string>
     <string name="选择手环">选择手环</string>
     <string name="返回">返回</string>
+    <string name="开始手语采集">开始手语采集</string>
+    <string name="结束手语采集">结束手语采集</string>
+    <string name="松开手指可取消录音">松开手指可取消录音</string>
+    <string name="向上滑动可取消录音">向上滑动可取消录音</string>
+    <string name="语音时间太短">语音时间太短</string>
     <string name="欢迎语">欢迎使用双向手语交流系统</string>
     <string name="手语识别">开始手语识别</string>
     <string name="识别模式">识别模式</string>

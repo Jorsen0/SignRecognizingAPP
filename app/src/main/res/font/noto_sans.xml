@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Last modified 18-10-4 下午9:19.
+  ~ Author: Scarecrow
+  ~ Mail: bugboy56@gmail.com
+  ~
+  -->
+
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <font
+        android:font="@font/noto_sans_cjk_light"
+        android:fontStyle="normal" />
+
+</font-family>

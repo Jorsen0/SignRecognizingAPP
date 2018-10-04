@@ -20,13 +20,31 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="2"
-            android:gravity="center">
-            <ImageView
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:id="@+id/button_start_conversation"
-                android:layout_width="140dp"
-                android:contentDescription="@string/app_name"
-                android:layout_height="200dp"
-                android:background="@mipmap/start_conversation_button"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="90dp"
+                    android:background="@drawable/start_conversation_icon"
+                    android:contentDescription="@string/app_name" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_sans"
+                    android:text="@string/开始交流"
+                    android:textColor="#E0FFFFFF"
+                    android:textSize="29sp" />
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -36,7 +54,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp">
+            android:paddingHorizontal="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,12 +66,29 @@
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:gravity="start"
-                   android:layout_marginBottom="13dp">
-                   <ImageView
+                   android:layout_marginBottom="7dp">
+
+                   <LinearLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:gravity="center"
                        android:id="@+id/setting_button"
-                       android:layout_width="80dp"
-                       android:layout_height="28dp"
-                       android:background="@drawable/button_setting" />
+                       android:orientation="horizontal">
+
+                       <ImageView
+                           android:layout_width="28dp"
+                           android:layout_height="28dp"
+                           android:background="@drawable/setting_icon" />
+
+                       <TextView
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:fontFamily="@font/noto_sans"
+                           android:text="@string/设置"
+                           android:textColor="#E0FFFFFF"
+                           android:textSize="27sp" />
+                   </LinearLayout>
+
                </LinearLayout>
 
 
@@ -66,12 +101,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:layout_marginTop="13dp">
+                    android:layout_marginTop="7dp">
 
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="28dp"
-                        android:background="@drawable/button_about" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:background="@drawable/about_icon" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans"
+                            android:text="@string/关于"
+                            android:textColor="#E0FFFFFF"
+                            android:textSize="27sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
 

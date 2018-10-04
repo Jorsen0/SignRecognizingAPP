@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.scarecrow.signscognizing.R;
@@ -108,7 +108,7 @@ public class ArmbandSelectFragment extends Fragment {
 
 
         final MainActivity parent_activity = (MainActivity) getActivity();
-        ImageView bt = fragment_view.findViewById(R.id.button_armband_select_refresh);
+        LinearLayout bt = fragment_view.findViewById(R.id.button_armband_select_refresh);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

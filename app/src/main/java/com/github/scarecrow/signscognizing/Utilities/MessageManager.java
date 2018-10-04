@@ -220,6 +220,7 @@ public class MessageManager {
                     .sendMessage(buildSignRecognizeRequest(0));
             MessageManager.getInstance()
                     .buildSignMessage();
+            noticeAllTargetMsgSignCaptureStart();
         } catch (Exception ee) {
             Log.e(TAG, "requestCaptureSign: can not create request, " + ee.getMessage());
             Toast.makeText(APP_CONTEXT,
@@ -232,7 +233,7 @@ public class MessageManager {
         return true;
     }
 
-    public boolean recaptureSignRequest(SignMessage message) {
+    public boolean requestCaptureSign(SignMessage message) {
         if (capture_state) {
             Log.e(TAG, "requestCaptureSign: sign capturing repeat");
             return false;
@@ -240,12 +241,19 @@ public class MessageManager {
         try {
             //初始化消息里的数据
             capture_state = true;
-            message.setCaptureComplete(false);
-            message.cleanTextContent();
+            if (message != null) {
+                message.setCaptureComplete(false);
+                message.cleanTextContent();
+                SocketConnectionManager.getInstance()
+                        .sendMessage(buildSignRecognizeRequest(message.getMsgId()));
+            } else {
+                MessageManager.getInstance().buildSignMessage();
+                SocketConnectionManager.getInstance()
+                        .sendMessage(buildSignRecognizeRequest(0));
+            }
             //向外界告知开始手语识别了
             noticeAllTargetMsgSignCaptureStart();
-            SocketConnectionManager.getInstance()
-                    .sendMessage(buildSignRecognizeRequest(message.getMsgId()));
+
         } catch (Exception ee) {
             Log.e(TAG, "requestCaptureSign: can not create request, " + ee.getMessage());
             capture_state = false;

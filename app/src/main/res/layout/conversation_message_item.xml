@@ -35,9 +35,13 @@
                 android:background="@drawable/bubble_box"
                 android:gravity="start"
                 android:inputType="none"
+                android:fontFamily="@font/noto_sans"
                 android:editable="false"
                 android:text="啊啊啊啊啊"
-                android:padding="16dp"
+                android:paddingBottom="-30dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="-30dp"
                 android:textColor="#000000"
                 android:textSize="28sp" />
         </LinearLayout>
@@ -159,7 +163,11 @@
                 android:layout_height="wrap_content"
                 android:text="sddddddddddddddddas"
                 android:layout_gravity="end"
-                android:padding="16dp"
+                android:fontFamily="@font/noto_sans"
+                android:paddingBottom="-30dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="-30dp"
                 android:textColor="#000000"
                 android:background="@drawable/bubble_box"
                 android:textSize="28sp" />

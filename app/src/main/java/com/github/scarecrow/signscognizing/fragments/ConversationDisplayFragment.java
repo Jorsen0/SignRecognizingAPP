@@ -67,6 +67,7 @@ public class ConversationDisplayFragment extends Fragment {
 
             @Override
             public void onSignCaptureStart() {
+                conversation_rv_adapter.updateMessageList();
                 conversation_rv_adapter.notifyDataSetChanged();
             }
 

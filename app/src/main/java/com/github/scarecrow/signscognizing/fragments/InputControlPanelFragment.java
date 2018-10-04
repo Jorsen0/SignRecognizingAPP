@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.scarecrow.signscognizing.R;
@@ -45,7 +46,7 @@ public class InputControlPanelFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         View view = getView();
         //返回button
-        final ImageView bt = view.findViewById(R.id.button_input_panel_back);
+        final LinearLayout bt = view.findViewById(R.id.button_input_panel_back);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,35 +58,11 @@ public class InputControlPanelFragment extends Fragment {
             }
         });
 
-
-
         //手语输入
         final ImageView bt_cap = view.findViewById(R.id.button_input_panel_sign_start);
         final TextView cap_state = view.findViewById(R.id.sign_input_state_tv);
-        bt_cap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                boolean capture_state = MessageManager.getInstance()
-                        .isCapturingSign();
-                if (!capture_state) {
-                    boolean res = MessageManager.getInstance()
-                            .requestCaptureSign();
-                    if (res) {
-                        bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_on));
-                        cap_state.setText("结束手语采集");
-                    }
 
-                } else {
-                    boolean res = MessageManager.getInstance()
-                            .stopSignRecognize();
-                    if (res) {
-                        bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_off));
-                        cap_state.setText("开始手语采集");
-                    }
-                }
-            }
-        });
         MessageManager.getInstance()
                 .addNewNoticeTarget(new MessageManager.NoticeMessageChanged() {
                     @Override
@@ -98,15 +75,43 @@ public class InputControlPanelFragment extends Fragment {
 
                     @Override
                     public void onSignCaptureEnd() {
-                        cap_state.setText("开始手语采集");
+                        cap_state.setText(getString(R.string.开始手语采集));
                     }
 
                     @Override
                     public void onSignCaptureStart() {
-                        cap_state.setText("结束手语采集");
+                        cap_state.setText(getString(R.string.结束手语采集));
                     }
                 });
-        //语音输入
+
+
+        bt_cap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean capture_state = MessageManager.getInstance()
+                        .isCapturingSign();
+                if (!capture_state) {
+                    boolean res = MessageManager.getInstance()
+                            .requestCaptureSign(null);
+                    if (res) {
+                        bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_on));
+                        cap_state.setText(getString(R.string.结束手语采集));
+                    }
+
+                } else {
+                    boolean res = MessageManager.getInstance()
+                            .stopSignRecognize();
+                    if (res) {
+                        bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_off));
+                        cap_state.setText(getString(R.string.开始手语采集));
+                    }
+                }
+            }
+        });
+
+
+
     }
 
     private String buildRecognizeModeSwitchRequest(String mode) {

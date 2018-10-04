@@ -33,7 +33,7 @@ public class SimplePolicy implements AutocompletePolicy {
     public boolean shouldShowPopup(Spannable text, int cursorPos) {
         content = text.toString();
         popup_show_status = content.length() > 1;
-        System.out.println("shouldShowPopup: content " + content);
+        Log.d(TAG, "shouldShowPopup: content  " + content + ", cursorPos " + cursorPos);
         return true;
 
     }
@@ -50,7 +50,7 @@ public class SimplePolicy implements AutocompletePolicy {
      * @return true if popup should be hidden
      */
     public boolean shouldDismissPopup(Spannable text, int cursorPos) {
-
+        Log.d(TAG, "shouldDismissPopup: content: " + text + ", cursorPos" + cursorPos);
         return false;
     }
 
@@ -72,7 +72,6 @@ public class SimplePolicy implements AutocompletePolicy {
     public CharSequence getQuery(Spannable text) {
         content = text.toString();
         Log.d(TAG, "getQuery: the text is " + content);
-        System.out.println("getQuery: the text is " + content);
         return content;
     }
 
