@@ -110,6 +110,7 @@ public class MessageManager {
                 int sign_id = jsonObject.getInt("sign_id");
                 if (sign_message_map.containsKey(sign_id)) {
                     sign_message_map.get(sign_id).setCaptureComplete(true);
+                    capture_state = false;
                     noticeAllTargetSignCaptureEnd();
                     noticeAllTargetMsgChange();
                 }
@@ -131,8 +132,8 @@ public class MessageManager {
      */
     private void processSignMessageFeedback(String text, int sign_id, int capture_id) {
         SignMessage new_msg;
-//        if(text.equals(""))
-//            return;
+        if (text.equals(""))
+            return;
 
         if (sign_message_map.containsKey(sign_id)) {
             new_msg = sign_message_map.get(sign_id);
@@ -203,8 +204,7 @@ public class MessageManager {
     }
 
 
-
-    private void synthesizeVoice(String voice_str) {
+    public void synthesizeVoice(String voice_str) {
         synthesizer.speak(voice_str);
     }
 
@@ -247,15 +247,17 @@ public class MessageManager {
                 SocketConnectionManager.getInstance()
                         .sendMessage(buildSignRecognizeRequest(message.getMsgId()));
             } else {
-                MessageManager.getInstance().buildSignMessage();
                 SocketConnectionManager.getInstance()
                         .sendMessage(buildSignRecognizeRequest(0));
+                MessageManager.getInstance().buildSignMessage();
+
             }
             //向外界告知开始手语识别了
             noticeAllTargetMsgSignCaptureStart();
 
         } catch (Exception ee) {
             Log.e(TAG, "requestCaptureSign: can not create request, " + ee.getMessage());
+            ee.printStackTrace();
             capture_state = false;
             Toast.makeText(APP_CONTEXT,
                     "与服务器连接已断开，请退出后重新连接手环再发起识别请求",

@@ -3,8 +3,11 @@ package com.github.scarecrow.signscognizing.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +25,11 @@ import com.github.scarecrow.signscognizing.Utilities.MessageManager;
 import com.github.scarecrow.signscognizing.Utilities.SignMessage;
 import com.github.scarecrow.signscognizing.Utilities.TextMessage;
 import com.github.scarecrow.signscognizing.Utilities.VoiceMessage;
+import com.github.scarecrow.signscognizing.Utilities.auto_complete.ACViewPopupPolicy;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleAutocompleteCallback;
 import com.github.scarecrow.signscognizing.Utilities.auto_complete.SimpleRecyclerViewPresenter;
+import com.otaliastudios.autocomplete.Autocomplete;
+import com.otaliastudios.autocomplete.AutocompleteCallback;
 
 import java.io.IOException;
 import java.util.List;
@@ -99,10 +105,12 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
                 } else {
                     if (holder.sign_confirm_dialog.getVisibility() != View.GONE)
                         holder.sign_confirm_dialog.setVisibility(View.GONE);
-//                    Log.d(TAG, "setHolderViewByMsgState: setting the data to callback and presenter");
-//                    holder.popupCallback.setMessageObj(message);
-//                    holder.popupPresenter.setComleteRes(message.getCompleteResult());
-//                    Log.d(TAG, "setHolderViewByMsgState: "+ ViewCompat.isAttachedToWindow(holder.receive_msg_content));
+                    if (holder.autocomplete_view.getVisibility() != View.VISIBLE)
+                        holder.autocomplete_view.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "setHolderViewByMsgState: setting the data to callback and presenter");
+                    holder.popupCallback.setMessageObj(message);
+                    holder.popupPresenter.setComleteRes(message.getCompleteResult());
+                    Log.d(TAG, "setHolderViewByMsgState: " + ViewCompat.isAttachedToWindow(holder.receive_msg_content));
                     holder.receive_msg_content.setText(message.getTextContent());
                 }
                 break;
@@ -224,6 +232,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
         holder.receive_msg_view.setVisibility(View.GONE);
         holder.sign_recapture_dialog.setVisibility(View.GONE);
         holder.sign_confirm_dialog.setVisibility(View.GONE);
+        holder.autocomplete_view.setVisibility(View.GONE);
         int init_blue_color_value = 0xFF3F51B5;
         holder.sign_confirm_yes_button.setTextColor(init_blue_color_value);
         holder.sign_confirm_no_button.setTextColor(init_blue_color_value);
@@ -287,12 +296,12 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
     }
 
     static class MessagesItemViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout receive_msg_view, send_msg_view,
-                sign_confirm_dialog, sign_recapture_dialog;
+        public LinearLayout receive_msg_view, send_msg_view, sign_confirm_dialog,
+                sign_recapture_dialog, autocomplete_view;
 
-        public TextView send_msg_content, sign_confirm_yes_button,
-                sign_confirm_no_button, sign_recapture_yes_button,
-                sign_recapture_no_button, msg_type_display;
+        public TextView send_msg_content, sign_confirm_yes_button, sign_confirm_no_button,
+                sign_recapture_yes_button, sign_recapture_no_button, msg_type_display,
+                autocomlete_button;
 
         public EditText receive_msg_content;
 
@@ -306,6 +315,7 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
             send_msg_view = view.findViewById(R.id.message_send_view);
             sign_confirm_dialog = view.findViewById(R.id.sign_confirm_dialog);
             sign_recapture_dialog = view.findViewById(R.id.sign_recapture_dialog);
+            autocomplete_view = view.findViewById(R.id.auto_complete_view);
 
             receive_msg_content = view.findViewById(R.id.msg_content_receive);
             send_msg_content = view.findViewById(R.id.msg_content_send);
@@ -316,22 +326,32 @@ public class ConversationMessagesRVAdapter extends RecyclerView.Adapter<Conversa
             sign_recapture_yes_button = view.findViewById(R.id.button_sign_recapture_yes);
             sign_recapture_no_button = view.findViewById(R.id.button_sign_recapture_no);
 
+            autocomlete_button = view.findViewById(R.id.auto_complete_button);
             msg_type_display = view.findViewById(R.id.text_view_msg_type_display);
 
 
-//            Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
-//            float elevation = 6f;
-//            Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
-//            popupCallback = new SimpleAutocompleteCallback(adapter);
-//            popupPresenter = new SimpleRecyclerViewPresenter(context);
-//            Log.d(TAG, "setHolderViewByMsgState: "+ ViewCompat.isAttachedToWindow(receive_msg_content));
-//            Autocomplete.on(receive_msg_content)
-//                    .with(new SimplePolicy())
-//                    .with((AutocompleteCallback) popupCallback)
-//                    .with(elevation)
-//                    .with(backgroundDrawable)
-//                    .with(popupPresenter)
-//                    .build();
+            Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+            float elevation = 6f;
+            Log.d(TAG, "setHolderViewByMsgState: build the autocomplete");
+            popupCallback = new SimpleAutocompleteCallback(adapter);
+            popupPresenter = new SimpleRecyclerViewPresenter(context);
+            Log.d(TAG, "setHolderViewByMsgState: " + ViewCompat.isAttachedToWindow(receive_msg_content));
+            Autocomplete.on(receive_msg_content)
+                    .with(new ACViewPopupPolicy())
+                    .with((AutocompleteCallback) popupCallback)
+                    .with(elevation)
+                    .with(backgroundDrawable)
+                    .with(popupPresenter)
+                    .build();
+
+            autocomlete_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "setHolderViewByMsgState: " + ViewCompat.isAttachedToWindow(receive_msg_content));
+                    String content = receive_msg_content.getText().toString();
+                    receive_msg_content.setText(content);
+                }
+            });
 
 
         }

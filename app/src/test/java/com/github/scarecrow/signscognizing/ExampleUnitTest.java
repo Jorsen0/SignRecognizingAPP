@@ -47,10 +47,10 @@ public class ExampleUnitTest {
 
     @Test
     public void testAutoCompleter() {
-        List<String> query1 = Arrays.asList("请问");
-        List<String> query2 = Arrays.asList("请问", "航班");
-        List<String> query3 = Arrays.asList("请问", "在哪里");
-        List<String> query4 = Arrays.asList("在哪里");
+        List<String> query1 = Arrays.asList("Ask");
+        List<String> query2 = Arrays.asList("Ask", "Flight");
+        List<String> query3 = Arrays.asList("Ask", "where");
+        List<String> query4 = Arrays.asList("baggage");
         System.out.println(SentenceAutoCompleter.getInstance().executeValueQuery(query1, true));
         System.out.println(SentenceAutoCompleter.getInstance().executeValueQuery(query2, false));
         System.out.println(SentenceAutoCompleter.getInstance().executeValueQuery(query3, true));

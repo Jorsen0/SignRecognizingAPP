@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.github.scarecrow.signscognizing.R;
 
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupItemRecyclerViewAdapter.StringListItemViewHolder>{
@@ -22,15 +22,13 @@ public class PopupItemRecyclerViewAdapter extends RecyclerView.Adapter <PopupIte
     private OnItemClickListener mListener = null;
 
     public PopupItemRecyclerViewAdapter(){
-        items = Arrays.asList("aaaa", "bbbbb", "vvvvv", "ddddd");
+        items = new LinkedList<>();
 
     }
 
 
     public void setItemList(List<String> itemList){
-
-//        this.items.clear();
-//        this.items.addAll(itemList);
+        this.items = itemList;
         notifyDataSetChanged();
     }
 

@@ -35,16 +35,8 @@ public class InputControlPanelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_input_control_panel, container,
-                false);
-    }
 
-
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        View view = getView();
+        View view = inflater.inflate(R.layout.fragment_input_control_panel, container, false);
         //返回button
         final LinearLayout bt = view.findViewById(R.id.button_input_panel_back);
         bt.setOnClickListener(new View.OnClickListener() {
@@ -75,12 +67,22 @@ public class InputControlPanelFragment extends Fragment {
 
                     @Override
                     public void onSignCaptureEnd() {
-                        cap_state.setText(getString(R.string.开始手语采集));
+                        if (isAdded())
+                            cap_state.setText(getString(R.string.开始手语采集));
+                        else {
+                            cap_state.setText("Start Sign Recognition");
+                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_off));
+                        }
                     }
 
                     @Override
                     public void onSignCaptureStart() {
-                        cap_state.setText(getString(R.string.结束手语采集));
+                        if (isAdded())
+                            cap_state.setText(getString(R.string.结束手语采集));
+                        else {
+                            cap_state.setText("Stop Sign Recognition");
+                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_on));
+                        }
                     }
                 });
 
@@ -109,6 +111,15 @@ public class InputControlPanelFragment extends Fragment {
                 }
             }
         });
+
+        return view;
+    }
+
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
 
 

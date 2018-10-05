@@ -24,7 +24,7 @@ import static com.github.scarecrow.signscognizing.Utilities.SocketCommunicatorTh
 public class Armband {
 
     public static final int ARMBAND_READY = -1,
-                            ARMBAND_OCCURPIED = -2;
+            ARMBAND_OCCUPIED = -2;
     /**
      * 0 未匹配
      * 1 作为左手
@@ -89,10 +89,10 @@ public class Armband {
 
     public String getArmbandStatus(){
         String armband_status_str;
-        if (armband_occupy_status == ARMBAND_OCCURPIED)
-            armband_status_str = "已被其他终端使用";
+        if (armband_occupy_status == ARMBAND_OCCUPIED)
+            armband_status_str = "Occupied";
         else
-            armband_status_str = "就绪";
+            armband_status_str = "Standby";
         return armband_status_str;
     }
 
@@ -111,7 +111,7 @@ public class Armband {
     @Override
     public String toString() {
         String str, armband_status_str;
-        if (armband_occupy_status == ARMBAND_OCCURPIED)
+        if (armband_occupy_status == ARMBAND_OCCUPIED)
             armband_status_str = "手环已被其他终端使用";
         else
             armband_status_str = "手环就绪，准备接受连接";

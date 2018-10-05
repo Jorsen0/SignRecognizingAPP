@@ -85,7 +85,7 @@ public class ArmbandListRecyclerViewAdapter extends RecyclerView.Adapter<Armband
             holder.select_state.setText("");
 //            双手模式时 使用checkbox以及count方式选择手环
 //            如果手环已被占用 禁用check box
-            if (armband.getArmbandStatusCode() == Armband.ARMBAND_OCCURPIED) {
+            if (armband.getArmbandStatusCode() == Armband.ARMBAND_OCCUPIED) {
                 holder.select_box.setEnabled(false);
                 holder.select_state.setText("手环已被占用");
                 return;
@@ -112,7 +112,7 @@ public class ArmbandListRecyclerViewAdapter extends RecyclerView.Adapter<Armband
         } else {
 //            单手模式时 使用点击list里的item方式
             holder.both_hand_check_view.setVisibility(View.GONE);
-            if (armband.getArmbandStatusCode() == Armband.ARMBAND_OCCURPIED) {
+            if (armband.getArmbandStatusCode() == Armband.ARMBAND_OCCUPIED) {
                 holder.item_body.setBackgroundResource(R.color.dark_alpha);
                 return;
             }

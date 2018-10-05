@@ -111,13 +111,16 @@ public class SubsequenceSearchTree {
      *          add the rest of nodes as children on the latest unsatisfied node
      *      2. all of the nodes satisfy the tree:
      *          only add the value on the last of the tree node which satisfy the sequence
-     * @param seq to add
+     * @param s to add
      * @param value of sequence
      */
-    public void addSeqence(List<String> seq, String value){
-        if(seq.size() == 0)
+    public void addSeqence(List<String> s, String value) {
+        if (s.size() == 0)
             return;
         TreeNode curr = root;
+        List<String> seq = new LinkedList<>();
+        for (String str : s)
+            seq.add(str.toLowerCase());
         //find the start node
         TreeNode next = findSingleNode(seq.get(0), curr);
         int iter_on_seq;
@@ -182,6 +185,10 @@ public class SubsequenceSearchTree {
         List<List<Pair<String, TreeNode>>> level_query_result = new LinkedList<>();
         active_nodes.add(root_node);
         for(String k : seqs){
+            k = k.toLowerCase();
+            if (k.equals(""))
+                continue;
+//            Log.d(TAG, "querySequence: " + k);
             List<TreeNode> previous_active_nodes = active_nodes;
             active_nodes = find(k, active_nodes, true);
             List<Pair<String, TreeNode>> level_nodes = getAllAccessibleValue(active_nodes);

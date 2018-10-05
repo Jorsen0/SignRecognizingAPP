@@ -42,7 +42,7 @@
                     android:fontFamily="@font/noto_sans"
                     android:text="@string/开始交流"
                     android:textColor="#E0FFFFFF"
-                    android:textSize="29sp" />
+                    android:textSize="25sp" />
             </LinearLayout>
 
 

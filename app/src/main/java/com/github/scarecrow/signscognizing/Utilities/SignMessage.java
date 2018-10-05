@@ -72,6 +72,7 @@ public class SignMessage extends ConversationMessage {
                 .getInstance()
                 .executeValueQuery(active_sentence.getWordSeq(), false);
         Log.d(TAG, "appendTextContent: execute complete" + complete_result);
+        Log.d(TAG, "appendTextContent: " + active_sentence.getWordSeq());
 
     }
 
@@ -87,8 +88,10 @@ public class SignMessage extends ConversationMessage {
      * @param res 补全结果
      */
     public void setCompleteResult(String res) {
+        MessageManager.getInstance().synthesizeVoice(res);
         active_sentence.setSentence(res);
         active_sentence = new SignSentence();
+        sentences.add(active_sentence);
     }
 
 
@@ -102,7 +105,7 @@ public class SignMessage extends ConversationMessage {
     public String getTextContent() {
         StringBuilder ret = new StringBuilder();
         for(SignSentence s:sentences){
-            ret.append(s.getSentenceStr());
+            ret.append(s.getSentenceStr()).append(" ");
         }
         return ret.toString();
     }
