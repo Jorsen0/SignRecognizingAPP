@@ -47,6 +47,7 @@ public class ExampleUnitTest {
 
     @Test
     public void testAutoCompleter() {
+        System.out.println(SentenceAutoCompleter.getInstance());
         List<String> query1 = Arrays.asList("Ask");
         List<String> query2 = Arrays.asList("Ask", "Flight");
         List<String> query3 = Arrays.asList("Ask", "where");

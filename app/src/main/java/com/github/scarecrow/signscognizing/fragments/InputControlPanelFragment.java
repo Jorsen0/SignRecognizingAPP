@@ -71,7 +71,7 @@ public class InputControlPanelFragment extends Fragment {
                             cap_state.setText(getString(R.string.开始手语采集));
                         else {
                             cap_state.setText("Start Sign Recognition");
-                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_off));
+//                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_off));
                         }
                     }
 
@@ -81,7 +81,7 @@ public class InputControlPanelFragment extends Fragment {
                             cap_state.setText(getString(R.string.结束手语采集));
                         else {
                             cap_state.setText("Stop Sign Recognition");
-                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_on));
+//                            bt_cap.setImageDrawable(getResources().getDrawable(R.drawable.icon_sign_recog_on));
                         }
                     }
                 });
